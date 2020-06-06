@@ -1,2 +1,1 @@
-ver x-= 2x;
-dsd
+var x = 1;
