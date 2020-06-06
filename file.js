@@ -1,4 +1,1 @@
-fafa
-ffs
-
-hahha
+ver x-= 2x;
