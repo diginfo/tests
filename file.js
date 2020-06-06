@@ -1,1 +1,1 @@
-var x = ^dd
+var x = 1000;
