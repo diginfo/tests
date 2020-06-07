@@ -1,0 +1,60 @@
++layout({border:false})
+  div(data-options="region:'west'" style="width:400px; background:#FAFAFA;" collapsible="false")  
+    form#receipthead.multi(_sqlid='inv^receipt_head' asdpx='adx').fit.easyui-form
+      +layout({border:false})
+        div(data-options="region:'north'" style="height:300px;background:#FAFAFA;").noborder
+
+          +fitem('Receipt ID',{id:'~', name:'RECEIPT_ID', class:'easyui-qbe fkey fit navi', panelWidth:'230px', validType:['length[1,30]']})
+          +fitem('Order ID',{id:'~', name:'PO_ID', class:'easyui-qbe', required:true,panelWidth:'230px', validType:['length[1,30]']})
+
+                        
+          +fitem('Vendor ID',{name:'VENDOR_ID', id:'~' ,class:'easyui-textbox',readonly:true})
+          +fitem('Name',{id:'~',name:'NAME', class:'easyui-textbox',readonly:true})
+          
+
+          +fitem('Delivery Date',{name:'DELIVERY_DATE', class:'easyui-datebox',readonly:true})
+
+          +fitem('Actual Delivery Date',{name:'ACT_DELIVERY_DATE', class:'easyui-datebox today'})
+        
+        div(data-options="region:'center'").noborder
+          .easyui-tabs(data-options="plain:true,justified:true")
+            div(title="Contact")
+              +fitem('Name',{id:'~',name:'CONTACT_PERSON', class:'easyui-textbox' ,validType:['length[1,80]']})
+              +fitem('Phone',{id:'~',name:'CONTACT_PHONE', class:'easyui-textbox' ,validType:['length[1,80]']})
+              +fitem('Fax',{id:'~',name:'CONTACT_FAX', class:'easyui-textbox' ,validType:['length[1,80]']})
+              +fitem('Email',{id:'~',name:'CONTACT_EMAIL', class:'easyui-textbox',validType:['email']})
+
+            div(title="Notes")
+              .fitem(style="margin-top:0")
+                label(style="margin-bottom:8px;left:-8px;") Order Notes
+                +input({eui:'textbox',name:'NOTES','data-options':"multiline:true", style:'height:150px;width:345px'})
+
+            div.files(title='Files' fit="true" _iconCls="icon-pclip" style="padding:4px 0 0 4px")
+              div(style="width:380px;")
+                #pofiles.easyui-filegrid(data-options="fit:true")
+                
+  div(data-options="region:'center'")   
+    #receiptlines
+  div#traced.easyui-dialog(style="width:500px;height:250px;" title="Trace/Dimensions Details" closed="true" modal="true")
+    #tracedg
+style.
+  div#toolbut {
+    position: relative;
+    top: -3px;
+  }
+
+  td[field=LINE_NO] {
+    background: linear-gradient(to bottom,#F9F9F9 0,#efefef 100%);
+  } td[field=LINE_NO] > .datagrid-cell {
+    color: #000000;
+  }
+  
+  form[class*="grid-"] {
+    padding: 20px 22px 10px 0 !important;  
+  } 
+  
+  form[class*="grid-"] .fitem {
+    margin-right: 0;
+  }
+
+script(type="text/javascript"): include js/purchase_receipt.js
