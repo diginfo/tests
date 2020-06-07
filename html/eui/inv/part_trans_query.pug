@@ -1,0 +1,42 @@
+//-
+  PAC 171107 - 2.2.113
+  1. Removed inline style for filters.
+
+
++layout({border:false})
+  div(data-options="region:'north'" style="height:130px;" collapsible="false" border="false").bg-sil
+    form#partquery.fit.easyui-form(asdpx="px")
+      div.two.ui-grid-a
+        div.ui-block-a(style="max-width:440px;") 
+          +fitem({text:'Part ID'},{id:'QRY_PART_ID',name:'PART_ID', _sqlid:'inv^partid', class:'easyui-combobox navi','data-options':"panelWidth:'250px'"},{style:'margin-bottom:8px'},{'data-role':'fieldcontain'})
+          +fitem('Trace ID',{id:'TRACE_ID',name:'TRACE_ID',class:'easyui-combobox  navi', disabled:true})
+          +fitem('Job Reference',{name:'WOREF',id:'WOREF', _sqlid:'vwltsa^seqid',class:'easyui-combobox navi', 'data-options': "_groupField:'BASE_ID'", disabled:true})              
+          
+        div.ui.block-b(style="max-width:400px;")
+          +fitem('Date From',{name:'DATE_FROM', class:'easyui-datebox'},{style:'margin-bottom:8px'})
+          +fitem('Date To',{name:'DATE_TO', class:'easyui-datebox'})
+          +fitem('Availability',{id:'BALQTY',class:'easyui-textbox sub-off', readonly:true})
+  
+  div(data-options="region:'center', border:false" style="padding:8px;").bg-sil
+    div#tracedg
+
+script: include js/part_trans.query.js
+
+style.
+  tr.last > td {
+    xborder-bottom-color: blue;
+  } tr.last > td[field="RUNNING_TOTAL"]{
+    font-weight: bold;
+  }
+  
+  /*
+  .datagrid-header-row td[field="TRACE_ID"],
+  .datagrid-header-row td[field="WOREF"] {
+    background: rgba(0, 0, 0, 0) url("../icons/filter.png") no-repeat scroll right 4px center;
+  }
+  
+  .datagrid-row td.click:hover {
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0) url("../icons/filter.png") no-repeat scroll right 4px center;
+  }
+  */
