@@ -1,0 +1,178 @@
+//-
+  PAC 171109 - 171110 2.2.408
+  1. Added Part Trans > Expired Materials
+  2. Added qbe for JOB-ISSUE
+  3. Added tooltip to Job Issue.
+
+  PAC 171113 - 2.2.409
+  1. Added edit icons to dimensional fields (disabled)
+
+  PAC 171205 - 2.2.410
+  1. Added qbe for JOB-RETURN 
+
+  CLS 180105 - 2.2.416
+  1. Changed the Transaction Qty to 4 decimal places 
+
+
+
++layout()
+  div#topdiv(data-options="region:'north',split:false" style="height:90px;background:#FAFAFA;padding:12px;" collapsible="false").noborder 
+
+    div#typediv
+      a(href="#" name="COMP" iconCls="icon-bolt" data-options="toggle:true, group:'g1',selected:true") Component
+      a(href="#" name="FG" iconCls="icon-nutbolt" data-options="toggle:true, group:'g1'") Finished     
+    
+    div#bigbut
+      div#modediv
+
+        div#compdiv
+          a(href="#" name="ADJ-IN" iconCls="icon-box_in-big" data-options="toggle:true, group:'g2'") Part Receipt
+          a(href="#" name="ADJ-OUT" iconCls="icon-box_out-big" data-options="toggle:true, group:'g2'") Part Issue
+          div.vsep
+          a.easyui-tooltip(href="#" name="JOB-OUT" iconCls="icon-tools_out-big" data-options="toggle:true, group:'g2'" title="Press 'q' & click for QBE") Job Issue
+          a.easyui-tooltip(href="#" name="JOB-IN" iconCls="icon-tools_in-big" data-options="toggle:true, group:'g2'" title="Press 'q' & click for QBE") Job Return
+        
+        div#fgdiv(style="display:none;")
+          a(href="#" name="FG-IN" iconCls="icon-fg_in-big" data-options="toggle:true, group:'g3'") FG Receipt
+          a(href="#" name="FG-OUT" iconCls="icon-fg_out-big" data-options="toggle:true, group:'g3'") FG Return
+          div.vsep
+          a(href="#" name="SHP-OUT" iconCls="icon-ship_out-big" data-options="toggle:true, group:'g3'") Shipment
+          a(href="#" name="SHP-IN" iconCls="icon-ship_in-big" data-options="toggle:true, group:'g3'") Ship Return
+        
+            
+      div#ctrldiv(style="margin-left:14px")
+        a#SAVE(href="#" name="SAVE" iconCls="icon-save-big") Save
+        a#CANCEL(href="#" name="CANCEL" iconCls="icon-cancel-big") Cancel
+        
+  
+  div(region="west" style="border:none;" collapsible="false")
+    div(style="display:none")
+      +fitem('Job Selector',{id:'JOB_QBE',class:'easyui-qbe'})
+
+    form#trans(asdpx='').lock
+      div.two
+        div(style="width:440px;") 
+          input#USER_ID( name='USER_ID' type='hidden' )
+          input#TRANS_TYPE(name='TRANS_TYPE' type='hidden')
+          +fitem('Transaction Date',{id:'~',name:'TRANSACTION_DATE', readonly:false,class:'easyui-datebox today'})
+          //+fitem('Part ID',{name:'PART_ID',id:'PART_ID', required:true, class:'easyui-combobox navi fit', _sqlid:'inv^traceparts', 'data-options':"panelWidth:'250px'"})
+          +fitem('Part ID',{name:'PART_ID',id:'PART_ID', required:true, class:'easyui-combobox', _sqlid:'inv^traceparts', 'data-options':"panelWidth:'250px',groupField:'PART_CLASS_ID'"})
+          +fitem('Part Description',{id:'PART_DESC', readonly:true, class:'easyui-textbox'})
+          +fitem('Part UOM',{id:'PART_UOM', readonly:true, class:'easyui-textbox'})
+          +fitem('Trace Mode',{id:'TRACEABLE', readonly:true, class:'easyui-textbox'})
+          +fitem('Piece Tracked',{id:'DIM_TRACKED', name:'~', readonly:true, class:'easyui-textbox'})
+          +fitem('Inventory Locked',{id:'LOCKED', name:'~', readonly:true, class:'easyui-textbox'}) 
+          div#udfs(style="display:none;")
+            +udf(true)
+
+          +fitem('Available Qty',{id:'AVAIL_BAL', class:'easyui-numberbox', precision:2, readonly:true, value:0})
+          +fitem('Transaction Qty',{name:'QTY',id:'~', required:true, class:'easyui-numberspinner', min:0, precision:4, value:0})
+          +fitem('Unit Material Cost',{name:'UNIT_MATERIAL_COST',id:'~', required:true, class:'easyui-numberspinner', min:0, precision:2, value:0})
+          +fitem('Document ID',{name:'DOCUMENT_ID', class:'easyui-textbox'})
+          +fitem('Notes & Comments',{name:'NOTES',id:'NOTES', class:'easyui-textbox','data-options':"multiline:true",style:'height:70px;'})
+                 
+        div(style="margin-top:24px;")
+          div#jobdiv
+            +fieldset('Job Details')
+              +fitem('Job Reference',{name:'WOREF',id:'WOREF', _sqlid:'vwltsa^transjobs','data-options':"validType: ['inList']"})
+              +fitem('Master ID',{id:'BASE_ID', readonly:true, class:'easyui-textbox'})
+              +fitem('Sub Assy ID',{id:'SUB_ID', readonly:true, class:'easyui-textbox'}) 
+              +fitem('Sequence No',{id:'SEQ_ID', readonly:true, class:'easyui-textbox'})
+              //-+input({id:'SEQ_ID', readonly:true, class:'easyui-textbox'})
+              +fitem('Qty Reqd / Recvd',{id:'QTY_REQ', readonly:true, class:'easyui-textbox'})         
+              +fitem('Job Cost',{id:'JOB_COST', readonly:true, class:'easyui-textbox'})
+              input#QTY_RCVD(name='QTY_RCVD' type='hidden')
+              
+          div#tracediv(style="margin-top:8px;")
+            +fieldset('Traceability') 
+              +fitem('Trace ID',{name:'TRACE_ID', id:'TRACE_ID', class:'easyui-combobox upper', validType:['length[1,50]']})
+              +fitem('Unit Material Cost',{id:'TRACE_MATERIAL_COST',name:'TRACE_MATERIAL_COST', required:true, class:'easyui-numberspinner', min:0, precision:2, value:0})
+              +fitem('Expiry Date',{id:'EXPIRY_DATE',name:'~', class:'easyui-datebox', readonly:true})
+              +fitem('Max Lot Size',{id:'LOT_SIZE', class:'easyui-numberbox', readonly:true})
+              +fitem('Lot Balance',{id:'BAL_QTY', class:'easyui-numberbox sub-off',  precision:2, readonly:true},{id:'tracebal'})
+            
+              div#traceprop
+                -for (var x=1; x<11; x++)
+                  .fitem(id='TRACE_USER_'+x+'_LBL')
+                    label.trace
+                    +input({name:'TRACE_USER_'+x,class:'easyui-textbox','data-options':"validType:['length[1,80]']"})
+
+          #dimsdiv(style="margin-top:8px;display:none;")
+            +fieldset('Piece Tracking')
+              +fitem('Dimension UOM',{id:'DIM_UOM', class:'easyui-textbox', readonly:true})
+              #dimout(style="margin-top:8px;")
+                +fitem('Select Dimensions',{id:'DIM_LWH', readonly:true, class:'easyui-combobox sub-off'})
+                +fitem('Available Pieces',{id:'DIM_PC_AVAIL', readonly:true, class:'easyui-numberbox', precision:0})
+              #dimin(style="margin-top:8px;")
+                #_LENGTH(style="margin-top:8px;")
+                  +fitem('Length',{id:'DIM_LENGTH', name:'~', class:'easyui-numberbox dimin', precision:4, min:0.0001})
+                #_WIDTH(style="margin-top:8px;")
+                  +fitem('Width',{id:'DIM_WIDTH', name:'~', class:'easyui-numberbox dimin', precision:4, min:0.0001})
+                #_HEIGHT(style="margin-top:8px;")
+                  +fitem('Height',{id:'DIM_HEIGHT', name:'~', class:'easyui-numberbox dimin', precision:4, min:0.0001})
+              #dimqty(style="margin-top:8px;")
+                +fitem('Piece Qty',{id:'DIM_PC_QTY', name:'~', required:true, class:'easyui-numberspinner', min:1, precision:0, value:1})
+
+script(type="text/javascript"): include js/part_trans.js
+
+style.
+  
+  #bigbut a {
+    color: #357EC7;
+  }
+  
+  #topdiv > div {
+    display:inline-block;  
+  }
+
+  #typediv {
+    width: 100px;
+    margin-right:20px;
+    height: 52px;
+    padding:4px 5px 4px 4px;
+    border: 1px solid #DDDDDD;
+    border-radius: 5px;
+  }
+  
+  #typediv > a {
+    position:relative;
+    display: inline-block;
+    text=align: left;
+    width:100%;  
+  } #typediv > a:last-child{
+    top: 2px;
+  } #typediv > a > span.l-btn-left{
+    width:100%;
+  }
+  
+  #bigbut {
+    position:relative;
+    top: -12px;
+  }
+
+  #modediv a.l-btn-selected:hover {
+    background: #caffd8 !important;
+    border-color: #999999;
+  }
+  
+  #bigbut a {
+    width:90px;
+    margin-right:8px;
+  }
+  
+  #bigbut > div {
+    display:inline-block;  
+  }
+  
+  #bigbut .vsep {
+    display:inline-block;
+    width:1px;
+    height:100%;
+    border-right:none;
+    margin: 0 7px;
+  }
+
+  #props > div.fitem,
+  #jobdiv,#tracediv {
+    display:none;
+  }
