@@ -1,0 +1,159 @@
+//-
+  PAC 171108 - 2.2.440
+  1. Added Dimensions Tab.
+  2. Added Nav buttons to QBE
+  3. Added data-alias fields for TRACEABLE & DIM_TRACKED
+  4. Reformatted & re-ordered the columns in the left panel.
+  5. Removed server-side console logging of @@@ BHAVE
+
+  PAC 171114 - 2.2.443
+  1. BUG: re-add id field to DESCRIPTION, was accidentally removed when I reformatted it.
+
+  PAC 171116 - 2.2.4
+  1. Added Used-In Tab & associated code.
+
+  PAC 180306 - 2.2.518
+  1. Added UNIT_CONSUMABLE_COST
+
+-var asdpx = 'adxp'; if(bhave.partgen=='y') var asdpx='ndxp'; 
+-if(bhave.partgen=='y')
+  -if(locals.req.query._udata.groups.indexOf('PART-UD')==-1)
+    <form id="partf" class="multi fit" _sqlid='inv^partall' asdpx='adxp'>
+  -else
+    <form id="partf" class="multi fit" _sqlid='inv^partall' asdpx='ndxp'>
+  //<form id="partf" class="multi fit" _sqlid='inv^partall' asdpx='ndxp'>  
+-else
+  <form id="partf" class="multi fit" _sqlid='inv^partall' asdpx='adxp'>
+
+style.
+  .easyui-linkbutton + .easyui-linkbutton {
+    margin-left: 8px;
+  }
+
++layout({border:false})
+  div(data-options="region:'west'" style="width:400px;" collapsible="false")
+    +fitem('Part ID',{id:'~', name:'ID', class:'easyui-qbe fkey fit navi', panelWidth:'230px', validType:['length[1,30]'],required:true})
+  
+    div#header
+      +input({id:'_PART_REV_NO',  type:'hidden'})
+      +fitem('Part Class',{name:'PART_CLASS_ID', required:true, class:'easyui-combobox','data-options':"data:[{text:'Component Part',value:'COMP'},{text:'Consumable Part',value:'CONSUMABLE'},{text:'Make To Stock',value:'FG'},{text:'Make To Order - Staged',value:'MAKE_STAGED'},{text:'Make To Order - Un-Staged',value:'MAKE_NOSTAGE'}]"})
+      +fitem('Traceable',{id:'~', name:'TRACEABLE', required:true, class:'easyui-combobox','data-options':"data:[{text:'Yes',value:'Y'},{text:'No',value:'N'}]"})
+      +fitem('Product Code',{name:'PRODUCT_CODE', required:true, class:'easyui-combobox', _sqlid:'vwltsa^productcodeid'}) 
+      +fitem('UOM ID',{id:'~', name:'UOM_ID', required:true, class:'easyui-combobox', _sqlid:'inv^unitsid'}) 
+      +fitem('Active',{id:'~',name:'ACTIVE', required:true, class:'easyui-combobox','data-options':"data:[{text:'Yes',value:'Y',selected:true},{text:'No',value:'N'}]"})
+
+      +fitem('Revision',{id:'~',name:'PART_REV_NO', class:'easyui-textbox',validType:['length[1,50]']})
+      +fitem('ECN',{id:'~',name:'ECN_ID', class:'easyui-textbox',validType:['length[1,50]'],readonly:true})
+      
+      +fitem('Alias',{id:'~',name:'ALIAS_DESC', class:'easyui-textbox', validType:['length[1,50]']})
+      +fitem('Material Unit Cost',{id:'~',name:'UNIT_MATERIAL_COST', class:'easyui-numberbox', 'data-options':"precision:4, min:0, _value:0, prefix:'$'"})
+      +fitem('Consumable Unit Cost',{id:'~',name:'UNIT_CONSUMABLE_COST', class:'easyui-numberbox', 'data-options':"precision:2, min:0, value:0, prefix:'$'"},{style:'display:none'})
+      +fitem('Dimensions',{class:'easyui-textbox','data-alias':'#DIM_TRACKED',readonly:true})
+      +fitem('Locked',{class:'easyui-textbox','data-alias':'#LOCKED',readonly:true})
+      //+fitem('Traceable',{class:'easyui-textbox','data-alias':'#TRACEABLE',readonly:true})
+      +fitem('Bal Qty',{id:'~',name:'BAL_QTY', class:'easyui-numberbox sub-off', value:0, readonly:true, precision:4})
+      +fitem('Created By',{name:'USER_ID', class:'easyui-textbox sub-off', readonly:true})
+      +fitem('Created Date',{name:'CREATE_DATE', class:'easyui-datetimebox sub-off', readonly:true})
+    //-+fitem('Description',{id:'~', name:'DESCRIPTION', class:'easyui-textbox' ,validType:['length[1,255]'] , 'data-options':"multiline:true", style:"height:150px;"},{style:"margin-top:24px"})
+
+    .fitem(style="margin-top:12px")
+      label(style="margin-bottom:4px;") Description
+      +input({eui:'textbox',id:'~', name:'DESCRIPTION','data-options':"multiline:true", validType:['length[1,255]'], style:'height:150px;width:345px'})
+
+  div(data-options="region:'center'")
+    div.easyui-tabs#ptabs(data-options="fit:true, tabPosition:'left'")   
+      
+      +tab-item("User Fields",{iconCls:"icon-udf",selected:"true"})
+        fieldset(style="margin-top:12px;")
+          +fitem('UDF Layout',{name:'UDF_LAYOUT_ID', id:'UDF_LAYOUT_ID',class:'easyui-combobox',_sqlid:'vwltsa^udfid'})
+  
+        fieldset()#udf
+          +udf
+      +tab-item("Physical Count",{iconCls:"icon-edit"})  
+        +fitem('Locked',{id:'~',name:'LOCKED', required:true, class:'easyui-combobox','data-options':"data:[{text:'Yes',value:'Y'},{text:'No',value:'N',selected:true}]"})   
+        +fitem('Last Count',{name:'LAST_COUNT_DATE',class:'easyui-datebox',readonly:true})
+        +fitem('Cycle Count(Days)',{name:'CYCLE_COUNT',class:'easyui-numberbox ', value:0,  precision:0})
+        #phycount
+      +tab-item("Dimensions", {iconCls:"icon-value"})
+        +layout({border:false})
+          div(data-options="region:'north'" style="height:110px;" collapsible="false" border="false").bg-sil
+            #dimsdiv
+              div.two.ui-grid-a
+                #dimsset.ui-block-a(style="max-width:440px;")
+                  +fitem('Dimension Tracked',{id:'~', name:'DIM_TRACKED', class:'easyui-combobox','data-options':"data:[{text:'YES',value:'Y'},{text:'NO',value:'N', selected:true}],readonly:true"})
+                  +fitem('Dimension UOM',{id:'~',name:'DIM_UOM', class:'easyui-combobox'})
+                  +fitem('Total Pieces',{id:'DIM_PC_TOTAL', class:'easyui-numberbox', readonly:true, value:0})            
+                  
+                #dimsdims.ui.block-b(style="max-width:400px;")
+                  +fitem('Length',{id:'~',name:'LENGTH', class:'easyui-combobox','data-options':"data:[{text:'YES',value:'Y'},{text:'NO',value:'N', selected:true}]"})
+                  +fitem('Width',{id:'~',name:'WIDTH', class:'easyui-combobox','data-options':"data:[{text:'YES',value:'Y'},{text:'NO',value:'N', selected:true}]"})
+                  +fitem('Height',{id:'~',name:'HEIGHT', class:'easyui-combobox','data-options':"data:[{text:'YES',value:'Y'},{text:'NO',value:'N', selected:true}]"})
+                  
+          div(data-options="region:'center', border:false" style="padding:8px;").bg-sil
+            include part_dimension.pug
+
+      +tab-item("Traceability",{iconCls:"icon-trace"})
+        div#trace(style="margin-top:20px;")
+          //+fitem('Traceable',{id:'~', name:'TRACEABLE', class:'easyui-combobox','data-options':"data:[{text:'YES',value:'Y'},{text:'NO',value:'N', selected:true}]"})
+          +fitem('Max Lot Size',{name:'LOT_SIZE', class:'easyui-numberspinner sub-on', min:0, precision:0, value:0 })
+          -for (var x=1; x<11; x++)
+            +fitem({text:'Trace Label '+x,id:'TRACE_'+x},{name:'TRACE_USER_'+x+'_LBL',class:'easyui-textbox sub-on','data-options':"validType:['length[1,40]']"})
+
+      +tab-item("Where Used",{fit:"true", iconCls:"icon-focus"})
+        +layout({border:false})
+          div(data-options="region:'north'" style="height:50px;" collapsible="false" border="false").bg-sil
+            .ui-block-a(style="max-width:440px;")
+              +fitem('Source Type',{id:'usedin_src', class:'easyui-combobox'})
+            
+            .ui.block-b(style="max-width:400px;")
+                           
+          div(data-options="region:'center', border:false" style="padding:8px;").bg-sil
+            #usedin.easyui-datagrid
+
+      </form>
+
+      +tab-item('Prices',{fit:"true", iconCls:"icon-money"})
+        #prices
+        
+      //-tab-item('Prices', {fit:"true", iconCls:"icon-money"})
+        form#price.multi(_sqlid:'vwltsa^part_price' asdpx="as")
+          input(type="hidden" name="PART_ID")
+          +fitem('Currency ID',{id:'~', name:'CURRENCY_ID', _sqlid:'admin^curr_ids', class:'easyui-combobox fkey'})
+          +fitem('Unit Price',{name:'UNIT_PRICE', class:'easyui-numberbox', min:0, precision:2, value:0 })
+        script.
+          $('form#price #CURRENCY_ID').combobox({
+            onSelect: function(rec){
+              var me = $(this);
+              cl(me.combobox('options'));
+            }
+          })
+      
+      +tab-item("Balances", {iconCls:"icon-inout"})
+        include part_trans_query.pug
+
+      +tab-item('Attachments', {fit:"true", iconCls:"icon-pclip"})
+        #partfiles.easyui-filegrid(data-options="fit:true")
+      
+      +tab-item('B.O.M', {fit:"true", iconCls:"icon-org"})
+        +layout({border:false})
+          div(data-options="region:'north'" style="height:50px;" collapsible="false" border="false").bg-sil
+            .grid-a(style="margin-top: 18px;")
+              div(style="max-width:440px;")
+                +fitem('Excel BOM Upload',{id:'xlbom', class:'easyui-filebox'}) 
+              div(style="max-width:400px;")
+                +button('Validate Items',{id:'bomval',iconCls:'icon-tick'})
+                
+          div(data-options="region:'center', border:false" style="padding:8px;").bg-sil
+            #boms
+      +tab-item('Material Plan', {fit:"true", iconCls:"icon-line"})
+        +fitem('Safety Stock Qty',{id:'~',name:'SAFETY_STOCK_QTY', class:'easyui-numberbox ', value:0, precision:4})      
+#pngenwin(style="min-width:410px;min-height:200px;")
+  include pn_gen_inc.pug
+
+-if(bhave.partgen=='y')
+  #addmenu.easyui-menu.hide
+    div(id="ud" name="ud" data-options="iconCls:'icon-keyboard'") User-Entered ID  
+    div(id="gen" name="gen" data-options="iconCls:'icon-bhave'") Auto-Generate ID
+
+script(type="text/javascript"): include js/sa_parts.js
+script(type="text/javascript"): include js/sa_parts_bom.js
