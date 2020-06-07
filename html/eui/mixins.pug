@@ -1,4 +1,31 @@
-put,fitem)
+- 
+  //var _ulan = locals.qry._udata.language || 'eng'; 
+  //var _lang = global._lang[_ulan] || {};
+  //var _lankeys = Object.getOwnPropertyNames(_lang);
+  
+  function trans(txt){var match = new RegExp(txt, 'i').exec(_lankeys); return match && match.length > 0 ? _lang[match[0]]:txt;}
+  function getOpts(obj){ try {return eval('({'+obj+'})');} catch(err){return {}}}
+  function extend(obj,data){for(var k in data){obj[k] = data[k]}; return obj;}
+ 
+mixin custom(grpid)
+  if($.isdev || grpid == process.env.GRPID)
+    block
+
+mixin require(src)
+  script.rm headScript('#{src}');
+    
+mixin spec(legend,input,opts)
+  -opts=opts || {style:'margin-top:6px;'}
+  +fieldset(legend,opts)
+    +input(extend({class:'easyui-textbox','data-options':"multiline:true,validType:['length[1,255]']", style:'height:130px;width:330px;'},input))
+
+mixin button(text,vars)
+  if(mobile)
+    a(href="#" data-role="button" data-inline="true")&attributes(vars)=text
+  else
+    a(href="#" class="easyui-linkbutton")&attributes(vars)=text
+
+mixin fitem(label,input,fitem)
   -
     fitem=fitem||{};
     if(mobile) fitem['class'] = "ui-field-contain";
