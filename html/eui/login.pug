@@ -213,4 +213,53 @@ block content
       setTimeout(function(){$('input:visible:enabled:first').focus()},250);
     }
 
-
+    $(document).ready(function(){
+    
+      if(self != top || navigator.userAgent=='pure-app') {
+        top.postMessage ({'login':true,'url':window.location.toString()},"*");
+      }
+      
+      $('#unew').on('click',function(e){
+        e.preventDefault;
+        unswitch();
+      })
+    
+      $('#splash').fadeIn(3000);
+      $('#slider').animate({width:'toggle'},2000); 
+      
+      if($('#content').length) document.location.href = '/';    
+      
+      setTimeout(function(){
+        $(document).off('keydown');
+        $('#win').window('open').hide().fadeIn('slow');
+        focel();
+      }, 500);
+      
+      $(document).on('keyup',function(event){
+        if(event.keyCode == 13){
+          $(document).off('keyup');
+          $("#submit").click();
+        }
+      });    
+      
+      login.hash.value = location.hash;
+      if(login.hash.value == '#usignup') unswitch();
+      
+      //$(window).bind( 'hashchange', function(e) {});
+      $('input[name="width"]').val(screen.width);
+      $('input[name="height"]').val(screen.height);
+      
+      var frm = $('form#login');
+      
+      if(frm.data('error') == true) {
+        if(frm.data('form') == 'usignup') unswitch();
+        setTimeout(function(){
+          $('div#errmsg').text(frm.data('msg')).addClass('show');
+        },500)
+        $('form#login input').addClass('invalid');
+      }
+      else $('form#login input').removeClass('invalid');
+      
+      doctitle("Pure Login");
+    })
+    
