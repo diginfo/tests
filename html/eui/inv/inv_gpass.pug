@@ -1,0 +1,35 @@
++layout({border:false})
+  div(data-options="region:'west'" style="width:400px; background:#FAFAFA;" collapsible="false")
+    form#gphead.multi(_sqlid='inv^gp_head' asdpx='adx').fit.easyui-form
+      +layout({border:false})
+        div(data-options="region:'north'" style="height:250px;background:#FAFAFA;").noborder
+          +fitem('Gate Pass ID',{id:'~', name:'GP_ID',class:'easyui-qbe fkey fit navi autonum ', panelWidth:'230px', validType:['length[1,30]']})
+          br
+          +fitem('GP Type',{id:'~', name:'GP_TYPE', class:'easyui-combobox', required:true})
+          +fitem('Cust / Vendor ID',{id:'~', name:'GP_TYPE_ID', class:'easyui-combobox', required:true})
+          +fitem('Cust / Vendor Name',{id:'~', name:'NAME', class:'easyui-textbox',readonly:true})
+          +fitem('Tx Date',{id:'~',name:'GP_DATE', class:'easyui-datebox today', required:true}) 
+          +fitem('Tx Type',{id:'~',required:true, name:"TX_TYPE" ,class:'easyui-combobox','data-options':"editable:false,data:[{value:'S',text:'Shipment'},{value:'R',text:'Return'}]"})
+
+        div(data-options="region:'center'").noborder
+          .easyui-tabs(data-options="plain:true,justified:true,fit:true")#gptabs
+
+            div(title="Contact" iconCls="icon-user")
+              +fitem('Contact Name',{name:'CONTACT_PERSON', class:'easyui-textbox' ,readonly:false})
+              +fitem('Phone',{name:'CONTACT_PHONE', class:'easyui-textbox' ,readonly:false})
+              +fitem('Fax',{name:'CONTACT_FAX', class:'easyui-textbox' ,readonly:false})
+              +fitem('Email',{name:'CONTACT_EMAIL', class:'easyui-textbox',readonly:false})
+
+            div(title="Address" iconCls="icon-address")
+              +fieldset('Ship To / From',{style:'margin-top:12px;'})
+                +fitem('Address 1',{name:'ADDR_1', class:'easyui-textbox',readonly:false})
+                +fitem('Address 2',{name:'ADDR_2', class:'easyui-textbox',readonly:false})
+                +fitem('Address 3',{name:'ADDR_3', class:'easyui-textbox',readonly:false})
+
+            div(title="Notes" iconCls="icon-notes")
+              +input({class:'easyui-textbox ronly-on', name:'NOTES','data-options':"multiline:true", style:'height:200px;width:100%'})
+
+  div(data-options="region:'center'")  
+    #gplines
+
+script(type="text/javascript"): include js/inv_gpass.js
